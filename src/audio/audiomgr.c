@@ -89,8 +89,11 @@ static void __clearAudioDMA(void);
 /******************************************************************************
  * Audio Manager API
  *****************************************************************************/
+int gMaxDMABuffers;
 void amCreateAudioMgr(ALSynConfig *c, OSPri pri, amConfig *amc, int fps)
 {
+    gMaxDMABuffers = 0;
+
     u32     i;
     f32     fsize;
 
@@ -399,8 +402,11 @@ static void __clearAudioDMA(void)
 
     
     dmaPtr = dmaState.firstUsed;
+    int dmaBufCount = 0;
     while(dmaPtr)
     {
+        ++dmaBufCount;
+
         nextPtr = (AMDMABuffer*)dmaPtr->node.next;
 
         /* remove old dma's from list */
@@ -422,6 +428,8 @@ static void __clearAudioDMA(void)
         }
         dmaPtr = nextPtr;
     }
+
+    gMaxDMABuffers = MAX(gMaxDMABuffers, dmaBufCount);
     
     nextDMA = 0;  /* reset */
     audFrameCt++;

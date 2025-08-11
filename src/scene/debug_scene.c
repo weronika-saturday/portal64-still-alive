@@ -103,6 +103,9 @@ static float debugSceneAveragedTimeMs(Time value, float* prevValue) {
     return averaged;
 }
 
+// HACK
+extern int gMaxDMABuffers;
+
 static void debugSceneRenderPerformanceMetrics(struct Scene* scene, struct RenderState* renderState, struct RenderPlan* renderPlan) {
     if (!gLastFrameTime) {
         return;
@@ -157,6 +160,10 @@ static void debugSceneRenderPerformanceMetrics(struct Scene* scene, struct Rende
     uint64_t visibleRooms = debugSceneVisibleRooms(renderPlan);
     int roomCount = debugSceneVisibleRoomCount(visibleRooms);
 
+    sprintf(metricText, "DMA: %d", gMaxDMABuffers);
+    debugSceneRenderTextMetric(&fontRenderer, metricText, textY, renderState);
+
+    textY -= fontRenderer.height - PERF_METRIC_ROW_PADDING;
     sprintf(metricText, "COL: %d/%d %d/%d",
         collisionSceneDynamicObjectCount(), MAX_DYNAMIC_COLLISION,
         contactSolverActiveManifoldCount(&gContactSolver), MAX_CONTACT_COUNT
